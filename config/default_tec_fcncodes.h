@@ -35,9 +35,11 @@
 /*
 ** Tec App command codes
 */
-#define TEC_NOOP_CC           0
-#define TEC_RESET_COUNTERS_CC 1
-#define TEC_PROCESS_CC        2
-#define TEC_DISPLAY_PARAM_CC  3
+#define TEC_NOOP_CC             0
+#define TEC_RESET_COUNTERS_CC   1
+#define TEC_PROCESS_CC          2
+#define TEC_DISPLAY_PARAM_CC    3
+#define TEC_GET_TEMPERATURE_CC  4
+
 
 #endif

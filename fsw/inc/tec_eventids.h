@@ -25,18 +25,20 @@
 #ifndef TEC_EVENTS_H
 #define TEC_EVENTS_H
 
-#define TEC_RESERVED_EID      0
-#define TEC_INIT_INF_EID      1
-#define TEC_CC_ERR_EID        2
-#define TEC_NOOP_INF_EID      3
-#define TEC_RESET_INF_EID     4
-#define TEC_MID_ERR_EID       5
-#define TEC_CMD_LEN_ERR_EID   6
-#define TEC_PIPE_ERR_EID      7
-#define TEC_VALUE_INF_EID     8
-#define TEC_CR_PIPE_ERR_EID   9
-#define TEC_SUB_HK_ERR_EID    10
-#define TEC_SUB_CMD_ERR_EID   11
-#define TEC_TABLE_REG_ERR_EID 12
+#define TEC_RESERVED_EID        0
+#define TEC_INIT_INF_EID        1
+#define TEC_CC_ERR_EID          2
+#define TEC_NOOP_INF_EID        3
+#define TEC_RESET_INF_EID       4
+#define TEC_MID_ERR_EID         5
+#define TEC_CMD_LEN_ERR_EID     6
+#define TEC_PIPE_ERR_EID        7
+#define TEC_VALUE_INF_EID       8
+#define TEC_CR_PIPE_ERR_EID     9
+#define TEC_SUB_HK_ERR_EID      10
+#define TEC_SUB_CMD_ERR_EID     11
+#define TEC_TABLE_REG_ERR_EID   12
+#define TEC_TEMPERATURE_INF_EID 13
+#define TEC_INVALID_ERR_EID     14
 
 #endif /* TEC_EVENTS_H */

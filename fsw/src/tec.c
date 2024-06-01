@@ -83,7 +83,6 @@ void TEC_Main(void)
 
         if (status == CFE_SUCCESS)
         {
-            printf("----- HELLO SPACE -----\n");
             TEC_TaskPipe(SBBufPtr);
         }
         else
@@ -117,6 +116,8 @@ CFE_Status_t TEC_Init(void)
     memset(&TEC_Data, 0, sizeof(TEC_Data));
 
     TEC_Data.RunStatus = CFE_ES_RunStatus_APP_RUN;
+
+    TEC_Data.Temperature = 55;
 
     /*
     ** Initialize app configuration data
@@ -204,4 +205,22 @@ CFE_Status_t TEC_Init(void)
     }
 
     return status;
+}
+
+void TEC_GetTemperature(char Unit)
+{
+
+    if(Unit == 'C')
+    {
+        TEC_Data.Temperature = 69;
+    }
+    else if (Unit == 'F')
+    {
+        TEC_Data.Temperature = 99;
+    }
+    else
+    {   
+        CFE_EVS_SendEvent(TEC_INVALID_ERR_EID, CFE_EVS_EventType_ERROR,
+                            "TEC: Invalid unit specifier %c. Please use C or F.\n", Unit);
+    }
 }

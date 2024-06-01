@@ -54,6 +54,11 @@ typedef struct
     uint8 ErrCounter;
 
     /*
+    ** Sensor inputs...
+    */
+    int8 Temperature;
+
+    /*
     ** Housekeeping telemetry packet...
     */
     TEC_HkTlm_t HkTlm;
@@ -91,5 +96,6 @@ extern TEC_Data_t TEC_Data;
 */
 void         TEC_Main(void);
 CFE_Status_t TEC_Init(void);
+void         TEC_GetTemperature(char Unit);
 
 #endif /* TEC_H */

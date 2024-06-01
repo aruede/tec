@@ -110,6 +110,13 @@ void TEC_ProcessGroundCommand(const CFE_SB_Buffer_t *SBBufPtr)
             }
             break;
 
+        case TEC_GET_TEMPERATURE_CC:
+            if (TEC_VerifyCmdLength(&SBBufPtr->Msg, sizeof(TEC_GetTemperatureCmd_t)))
+            {
+                TEC_GetTemperatureCmd((const TEC_GetTemperatureCmd_t *)SBBufPtr);
+            }
+            break;
+
         /* default case already found during FC vs length test */
         default:
             CFE_EVS_SendEvent(TEC_CC_ERR_EID, CFE_EVS_EventType_ERROR, "Invalid ground command code: CC = %d",

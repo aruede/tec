@@ -36,16 +36,22 @@ typedef struct TEC_DisplayParam_Payload
     char   ValStr[TEC_STRING_VAL_LEN]; /**< An example string */
 } TEC_DisplayParam_Payload_t;
 
+
+typedef struct TEC_Temperature_Payload
+{
+    char Unit;
+}TEC_Temperature_Payload_t;
+
 /*************************************************************************/
 /*
-** Type definition (Sample App housekeeping)
+** Type definition (TEC App housekeeping)
 */
 
 typedef struct TEC_HkTlm_Payload
 {
     uint8 CommandErrorCounter;
     uint8 CommandCounter;
-    uint8 spare[2];
+    int8 Temperature;
 } TEC_HkTlm_Payload_t;
 
 #endif

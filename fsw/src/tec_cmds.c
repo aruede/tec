@@ -55,6 +55,12 @@ CFE_Status_t TEC_SendHkCmd(const TEC_SendHkCmd_t *Msg)
     TEC_Data.HkTlm.Payload.CommandCounter      = TEC_Data.CmdCounter;
 
     /*
+    ** Get spacecraft temperature...
+    */
+
+    TEC_Data.HkTlm.Payload.Temperature = TEC_Data.Temperature;
+
+    /*
     ** Send housekeeping telemetry packet...
     */
     CFE_SB_TimeStampMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader));
@@ -151,9 +157,23 @@ CFE_Status_t TEC_ProcessCmd(const TEC_ProcessCmd_t *Msg)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 CFE_Status_t TEC_DisplayParamCmd(const TEC_DisplayParamCmd_t *Msg)
 {
+    TEC_Data.CmdCounter++;
+
     CFE_EVS_SendEvent(TEC_VALUE_INF_EID, CFE_EVS_EventType_INFORMATION,
                       "TEC: ValU32=%lu, ValI16=%d, ValStr=%s", (unsigned long)Msg->Payload.ValU32,
                       (int)Msg->Payload.ValI16, Msg->Payload.ValStr);
+
+    return CFE_SUCCESS;
+}
+
+CFE_Status_t TEC_GetTemperatureCmd(const TEC_GetTemperatureCmd_t *Msg)
+{
+    TEC_Data.CmdCounter++;
+
+    CFE_EVS_SendEvent(TEC_TEMPERATURE_INF_EID, CFE_EVS_EventType_INFORMATION,
+                      "TEC: Requested temperature in %c", Msg->Payload.Unit);
+
+    TEC_GetTemperature(Msg->Payload.Unit);
 
     return CFE_SUCCESS;
 }

@@ -62,9 +62,15 @@ typedef struct
 
 typedef struct
 {
-    CFE_MSG_CommandHeader_t           CommandHeader; /**< \brief Command header */
+    CFE_MSG_CommandHeader_t CommandHeader; /**< \brief Command header */
     TEC_DisplayParam_Payload_t Payload;
 } TEC_DisplayParamCmd_t;
+
+typedef struct
+{
+    CFE_MSG_CommandHeader_t CommandHeader; /**< \brief Command header */
+    TEC_Temperature_Payload_t Payload;
+} TEC_GetTemperatureCmd_t;
 
 /*************************************************************************/
 /*
