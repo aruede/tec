@@ -70,7 +70,7 @@ typedef struct
 {
     CFE_MSG_CommandHeader_t CommandHeader; /**< \brief Command header */
     TEC_Temperature_Payload_t Payload;
-} TEC_GetTemperatureCmd_t;
+} TEC_TemperatureHkCmd_t;
 
 /*************************************************************************/
 /*

@@ -58,7 +58,10 @@ CFE_Status_t TEC_SendHkCmd(const TEC_SendHkCmd_t *Msg)
     ** Get spacecraft temperature...
     */
 
-    TEC_Data.HkTlm.Payload.Temperature = TEC_Data.Temperature;
+    TEC_Data.HkTlm.Payload.reserved = 55;
+
+    TEC_Data.HkTlm.Payload.Unit = TEC_Data.TemperatureUnitHk;
+    TEC_Data.HkTlm.Payload.Temperature = TEC_Data.TemperatureHk;
 
     /*
     ** Send housekeeping telemetry packet...
@@ -166,14 +169,14 @@ CFE_Status_t TEC_DisplayParamCmd(const TEC_DisplayParamCmd_t *Msg)
     return CFE_SUCCESS;
 }
 
-CFE_Status_t TEC_GetTemperatureCmd(const TEC_GetTemperatureCmd_t *Msg)
+CFE_Status_t TEC_ConvertTemperatureCmd(const TEC_TemperatureHkCmd_t *Msg)
 {
     TEC_Data.CmdCounter++;
 
     CFE_EVS_SendEvent(TEC_TEMPERATURE_INF_EID, CFE_EVS_EventType_INFORMATION,
                       "TEC: Requested temperature in %c", Msg->Payload.Unit);
 
-    TEC_GetTemperature(Msg->Payload.Unit);
+    TEC_ConvertHkTemperature(Msg->Payload.Unit);
 
     return CFE_SUCCESS;
 }

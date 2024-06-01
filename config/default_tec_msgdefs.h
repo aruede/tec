@@ -51,7 +51,9 @@ typedef struct TEC_HkTlm_Payload
 {
     uint8 CommandErrorCounter;
     uint8 CommandCounter;
-    int8 Temperature;
+    uint8 reserved;
+    char Unit;
+    uint32 Temperature;
 } TEC_HkTlm_Payload_t;
 
 #endif

@@ -111,9 +111,9 @@ void TEC_ProcessGroundCommand(const CFE_SB_Buffer_t *SBBufPtr)
             break;
 
         case TEC_GET_TEMPERATURE_CC:
-            if (TEC_VerifyCmdLength(&SBBufPtr->Msg, sizeof(TEC_GetTemperatureCmd_t)))
+            if (TEC_VerifyCmdLength(&SBBufPtr->Msg, sizeof(TEC_TemperatureHkCmd_t)))
             {
-                TEC_GetTemperatureCmd((const TEC_GetTemperatureCmd_t *)SBBufPtr);
+                TEC_ConvertTemperatureCmd((const TEC_TemperatureHkCmd_t *)SBBufPtr);
             }
             break;
 

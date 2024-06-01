@@ -56,7 +56,11 @@ typedef struct
     /*
     ** Sensor inputs...
     */
-    int8 Temperature;
+    
+    // TODO: Make a struct TEC_TemperatureVal_t
+    uint32 Temperature;
+    uint32 TemperatureHk;
+    char TemperatureUnitHk;
 
     /*
     ** Housekeeping telemetry packet...
@@ -96,6 +100,6 @@ extern TEC_Data_t TEC_Data;
 */
 void         TEC_Main(void);
 CFE_Status_t TEC_Init(void);
-void         TEC_GetTemperature(char Unit);
+void         TEC_ConvertHkTemperature(char Unit);
 
 #endif /* TEC_H */

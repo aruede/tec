@@ -35,6 +35,6 @@ CFE_Status_t TEC_ResetCountersCmd(const TEC_ResetCountersCmd_t *Msg);
 CFE_Status_t TEC_ProcessCmd(const TEC_ProcessCmd_t *Msg);
 CFE_Status_t TEC_NoopCmd(const TEC_NoopCmd_t *Msg);
 CFE_Status_t TEC_DisplayParamCmd(const TEC_DisplayParamCmd_t *Msg);
-CFE_Status_t TEC_GetTemperatureCmd(const TEC_GetTemperatureCmd_t *Msg);
+CFE_Status_t TEC_ConvertTemperatureCmd(const TEC_TemperatureHkCmd_t *Msg);
 
 #endif /* TEC_CMDS_H */

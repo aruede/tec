@@ -21,6 +21,8 @@
  *   This file contains the source code for the TEC App.
  */
 
+#include <stdlib.h>
+
 /*
 ** Include Files:
 */
@@ -31,6 +33,8 @@
 #include "tec_dispatch.h"
 #include "tec_tbl.h"
 #include "tec_version.h"
+
+static CFE_Status_t TEC_ReadTemperature(void);
 
 /*
 ** global data
@@ -83,6 +87,16 @@ void TEC_Main(void)
 
         if (status == CFE_SUCCESS)
         {
+            /* "Read" the temperature, gives a value between 0 and 255 */
+            TEC_Data.Temperature = rand() % 256;
+
+            status = TEC_ReadTemperature();
+            if (status != CFE_SUCCESS)
+            {
+                CFE_EVS_SendEvent(TEC_VALUE_INF_EID, CFE_EVS_EventType_ERROR,
+                                "TEC App: TEC_ReadTemperature , RC = 0x%08lX", (unsigned long)status);
+            }
+
             TEC_TaskPipe(SBBufPtr);
         }
         else
@@ -117,12 +131,12 @@ CFE_Status_t TEC_Init(void)
 
     TEC_Data.RunStatus = CFE_ES_RunStatus_APP_RUN;
 
-    TEC_Data.Temperature = 55;
-
     /*
     ** Initialize app configuration data
     */
     TEC_Data.PipeDepth = TEC_PIPE_DEPTH;
+
+    TEC_Data.TemperatureUnitHk = 'C';
 
     strncpy(TEC_Data.PipeName, "TEC_CMD_PIPE", sizeof(TEC_Data.PipeName));
     TEC_Data.PipeName[sizeof(TEC_Data.PipeName) - 1] = 0;
@@ -207,20 +221,38 @@ CFE_Status_t TEC_Init(void)
     return status;
 }
 
-void TEC_GetTemperature(char Unit)
+void TEC_ConvertHkTemperature(char Unit)
 {
+    TEC_Data.TemperatureUnitHk = Unit;
+}
 
-    if(Unit == 'C')
+static CFE_Status_t TEC_ReadTemperature(void)
+{
+    CFE_Status_t status = CFE_SUCCESS;
+
+    /* "Read" the temperature, gives a value between 0 and 255 */
+    TEC_Data.Temperature = rand() % 256;
+
+    if(TEC_Data.TemperatureUnitHk == 'C')
     {
-        TEC_Data.Temperature = 69;
+        TEC_Data.TemperatureHk = TEC_Data.Temperature;
     }
-    else if (Unit == 'F')
+    else if (TEC_Data.TemperatureUnitHk == 'F')
     {
-        TEC_Data.Temperature = 99;
+        // Note: could to a sanity check for the value to be in range
+        TEC_Data.TemperatureHk = TEC_Data.Temperature * 2 + 32;
     }
     else
     {   
+        TEC_Data.TemperatureUnitHk = 'C';
+        TEC_Data.TemperatureHk = TEC_Data.Temperature;
         CFE_EVS_SendEvent(TEC_INVALID_ERR_EID, CFE_EVS_EventType_ERROR,
-                            "TEC: Invalid unit specifier %c. Please use C or F.\n", Unit);
+                            "TEC: Invalid unit specifier %c. Please use C or F. Defaulting to C.\n", 
+                            TEC_Data.TemperatureUnitHk);
+
+        status = CFE_STATUS_RANGE_ERROR;
     }
+
+    return status;
+
 }
