@@ -81,12 +81,6 @@ void TEC_Main(void)
         {
             TEC_Data.HkTlm.Payload.reserved = TEC_Data.HkTlm.Payload.reserved + 1;
 
-            CFE_SB_TimeStampMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader));
-            CFE_SB_TransmitMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader), true);
-
-            /* "Read" the temperature, gives a value between 0 and 255 */
-            TEC_Data.Temperature = rand() % 256;
-
             status = TEC_ReadTemperature();
             if (status != CFE_SUCCESS)
             {
@@ -129,6 +123,8 @@ CFE_Status_t TEC_Init(void)
     TEC_Data.PipeDepth = TEC_PIPE_DEPTH;
 
     TEC_Data.TemperatureUnitHk = 'C';
+
+    // TEC_Data.ProcessorID = CFE_PSP_GetProcessorId();
 
     strncpy(TEC_Data.PipeName, "TEC_CMD_PIPE", sizeof(TEC_Data.PipeName));
     TEC_Data.PipeName[sizeof(TEC_Data.PipeName) - 1] = 0;
@@ -179,8 +175,28 @@ CFE_Status_t TEC_Init(void)
         /*
         ** Subscribe to ground command packets
         */
-       CFE_EVS_SendDbg(TEC_INIT_INF_EID, "Subscribing to 0x%04x", TEC_CMD_MID);
+        CFE_EVS_SendDbg(TEC_INIT_INF_EID, "Subscribing to 0x%04x", TEC_CMD_MID);
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(TEC_CMD_MID), TEC_Data.CommandPipe);
+        if (status != CFE_SUCCESS)
+        {
+            CFE_EVS_SendEvent(TEC_SUB_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "TEC App: Error Subscribing to Commands, RC = 0x%08lX", (unsigned long)status);
+        }
+    }
+
+    if (status == CFE_SUCCESS)
+    {
+        /*
+        ** Subscribe to other processors telemetry (CPU_A, CPU_B)
+        */
+        CFE_EVS_SendDbg(TEC_INIT_INF_EID, "Subscribing to 0x%04x", TEC_CMD_MID);
+        status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(CPUA_HK_MID), TEC_Data.CommandPipe);
+        if (status != CFE_SUCCESS)
+        {
+            CFE_EVS_SendEvent(TEC_SUB_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "TEC App: Error Subscribing to Commands, RC = 0x%08lX", (unsigned long)status);
+        }
+        status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(CPUB_HK_MID), TEC_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(TEC_SUB_CMD_ERR_EID, CFE_EVS_EventType_ERROR,

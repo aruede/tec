@@ -42,6 +42,8 @@
 ** Type Definitions
 *************************************************************************/
 
+// #define LocalProcessorID    CFE_PLATFORM_TBL_VALID_PRID_1
+
 /*
 ** Global Data
 */
@@ -61,6 +63,8 @@ typedef struct
     uint32 Temperature;
     uint32 TemperatureHk;
     char TemperatureUnitHk;
+
+    uint32 RemoteTemperatures[2];
 
     /*
     ** Housekeeping telemetry packet...
@@ -84,6 +88,8 @@ typedef struct
     uint16 PipeDepth;
 
     CFE_TBL_Handle_t TblHandles[TEC_NUMBER_OF_TABLES];
+
+    // uint32 ProcessorID;
 } TEC_Data_t;
 
 /*

@@ -125,6 +125,29 @@ void TEC_ProcessGroundCommand(const CFE_SB_Buffer_t *SBBufPtr)
     }
 }
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
+/*                                                                            */
+/* TEC Majority voting on all Hk Temperature measurements                     */
+/*                                                                            */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
+
+static void TEC_MajorityVoter(const CFE_SB_Buffer_t *SBBufPtr, uint8 RemoteCpuIndex)
+{
+    const TEC_HkTlm_t *Msg = (const TEC_HkTlm_t *)SBBufPtr;
+    uint32 RemoteTemperature = Msg->Payload.Temperature;
+    // char RemoteUnit = Msg->Payload.Unit;
+
+    // TODO: Majority voting....
+    
+    TEC_Data.RemoteTemperatures[RemoteCpuIndex] = RemoteTemperature;
+
+    CFE_EVS_SendEvent(TEC_VALUE_INF_EID, CFE_EVS_EventType_INFORMATION,
+                        "Local Temp %d, CPU A Temp %d, CPU B Temp %d\n",
+                        TEC_Data.TemperatureHk, TEC_Data.RemoteTemperatures[0], TEC_Data.RemoteTemperatures[1]);
+}
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 /*                                                                            */
 /*  Purpose:                                                                  */
@@ -147,7 +170,12 @@ void TEC_TaskPipe(const CFE_SB_Buffer_t *SBBufPtr)
         case TEC_SEND_HK_MID:
             TEC_SendHkCmd((const TEC_SendHkCmd_t *)SBBufPtr);
             break;
-
+        case CPUA_HK_MID:
+            TEC_MajorityVoter(SBBufPtr, 0);
+            break;
+        case CPUB_HK_MID:
+            TEC_MajorityVoter(SBBufPtr, 1);
+            break;
         default:
             CFE_EVS_SendEvent(TEC_MID_ERR_EID, CFE_EVS_EventType_ERROR,
                               "TEC: invalid command packet,MID = 0x%x", (unsigned int)CFE_SB_MsgIdToValue(MsgId));
