@@ -59,11 +59,12 @@ typedef struct
     ** Sensor inputs...
     */
     
-    // TODO: Make a struct TEC_TemperatureVal_t
+    // This is the majority voted temperature
     uint32 Temperature;
+    // This is the locally measure temperature
     uint32 TemperatureHk;
     char TemperatureUnitHk;
-
+    // Those are the remotely measured temperatures
     uint32 RemoteTemperatures[2];
 
     /*

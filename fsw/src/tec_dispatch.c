@@ -138,13 +138,38 @@ static void TEC_MajorityVoter(const CFE_SB_Buffer_t *SBBufPtr, uint8 RemoteCpuIn
     uint32 RemoteTemperature = Msg->Payload.Temperature;
     // char RemoteUnit = Msg->Payload.Unit;
 
-    // TODO: Majority voting....
-    
     TEC_Data.RemoteTemperatures[RemoteCpuIndex] = RemoteTemperature;
 
+    if (TEC_Data.TemperatureHk == TEC_Data.RemoteTemperatures[0] || TEC_Data.TemperatureHk == TEC_Data.RemoteTemperatures[1]) {
+        TEC_Data.Temperature = TEC_Data.TemperatureHk;
+    } else if (TEC_Data.RemoteTemperatures[0] == TEC_Data.RemoteTemperatures[1]) {
+        TEC_Data.Temperature = TEC_Data.RemoteTemperatures[0];
+        CFE_EVS_SendEvent(TEC_MID_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "TEC: I lost the vote! My temperature is %d, but %d won...", TEC_Data.TemperatureHk, TEC_Data.Temperature);
+    } else {
+        // TEC_Data.Temperature = -1;
+        CFE_EVS_SendEvent(TEC_MID_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "TEC: Catastrophic failure... couldnt find majority!");
+       /* 
+       TODO: Handle Error case...
+       For example raise some events or alerts, or request a retransmission from the faulty node
+        */
+
+    }
+
+    // CFE_EVS_SendEvent(TEC_VALUE_INF_EID, CFE_EVS_EventType_INFORMATION,
+    //                     "TEC: Temps local %d A %d B %d\n", TEC_Data.TemperatureHk, TEC_Data.RemoteTemperatures[0], TEC_Data.RemoteTemperatures[1]);
+
     CFE_EVS_SendEvent(TEC_VALUE_INF_EID, CFE_EVS_EventType_INFORMATION,
-                        "Local Temp %d, CPU A Temp %d, CPU B Temp %d\n",
-                        TEC_Data.TemperatureHk, TEC_Data.RemoteTemperatures[0], TEC_Data.RemoteTemperatures[1]);
+                        "TEC: The voted Temperature is %d\n", TEC_Data.Temperature);
+
+    // TODO: Further use ElectedTemperature as the official TO/Downlink temperature...
+
+    /*
+    TODO: Implement a counter that counts if the local node failed and lost the vote.
+    If the lost_counter passes a predefined threshold, we can mask it out (add field in TEC_Data and add to Hk message).
+    Then, in the majority voter of the remote nodes, we do not take this node into consideration anymore. reducing it to a simplex module. Then its 1 vs 1...
+    */
 }
 
 

@@ -241,21 +241,22 @@ static CFE_Status_t TEC_ReadTemperature(void)
     CFE_Status_t status = CFE_SUCCESS;
 
     /* "Read" the temperature, gives a value between 0 and 255 */
-    TEC_Data.Temperature = rand() % 256;
+    // uint32 Temp = rand() % 256;
+    uint32 Temp = 55;
 
     if(TEC_Data.TemperatureUnitHk == 'C')
     {
-        TEC_Data.TemperatureHk = TEC_Data.Temperature;
+        TEC_Data.TemperatureHk = Temp;
     }
     else if (TEC_Data.TemperatureUnitHk == 'F')
     {
         // Note: could to a sanity check for the value to be in range
-        TEC_Data.TemperatureHk = TEC_Data.Temperature * 2 + 32;
+        TEC_Data.TemperatureHk = Temp * 2 + 32;
     }
     else
     {   
         TEC_Data.TemperatureUnitHk = 'C';
-        TEC_Data.TemperatureHk = TEC_Data.Temperature;
+        TEC_Data.TemperatureHk = Temp;
         CFE_EVS_SendEvent(TEC_INVALID_ERR_EID, CFE_EVS_EventType_ERROR,
                             "TEC: Invalid unit specifier %c. Please use C or F. Defaulting to C.\n", 
                             TEC_Data.TemperatureUnitHk);
