@@ -22,7 +22,7 @@ add_cfe_app(tec ${APP_SRC_FILES})
 target_include_directories(tec PUBLIC fsw/inc)
 # Include the public API from sample_lib to demonstrate how
 # to call library-provided functions
-add_cfe_app_dependency(tec sample_lib)
+# add_cfe_app_dependency(tec sample_lib)
 
 # Add table
 add_cfe_tables(tec fsw/tables/tec_tbl.c)

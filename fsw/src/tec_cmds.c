@@ -33,9 +33,6 @@
 #include "tec_utils.h"
 #include "tec_msg.h"
 
-/* The sample_lib module provides the SAMPLE_Function() prototype */
-#include "sample_lib.h"
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 /*                                                                            */
 /*  Purpose:                                                                  */
@@ -58,7 +55,7 @@ CFE_Status_t TEC_SendHkCmd(const TEC_SendHkCmd_t *Msg)
     ** Get spacecraft temperature...
     */
 
-    TEC_Data.HkTlm.Payload.reserved = 55;
+    // TEC_Data.HkTlm.Payload.reserved = 55;
 
     TEC_Data.HkTlm.Payload.Unit = TEC_Data.TemperatureUnitHk;
     TEC_Data.HkTlm.Payload.Temperature = TEC_Data.TemperatureHk;
@@ -146,9 +143,6 @@ CFE_Status_t TEC_ProcessCmd(const TEC_ProcessCmd_t *Msg)
         CFE_ES_WriteToSysLog("TEC App: Fail to release table address: 0x%08lx", (unsigned long)status);
         return status;
     }
-
-    /* Invoke a function provided by TEC_LIB */
-    SAMPLE_LIB_Function();
 
     return CFE_SUCCESS;
 }

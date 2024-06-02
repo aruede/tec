@@ -52,11 +52,6 @@ void TEC_Main(void)
     CFE_SB_Buffer_t *SBBufPtr;
 
     /*
-    ** Create the first Performance Log entry
-    */
-    CFE_ES_PerfLogEntry(TEC_PERF_ID);
-
-    /*
     ** Perform application-specific initialization
     ** If the Initialization fails, set the RunStatus to
     ** CFE_ES_RunStatus_APP_ERROR and the App will not enter the RunLoop
@@ -67,26 +62,28 @@ void TEC_Main(void)
         TEC_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
     }
 
+    CFE_SB_TimeStampMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader));
+    CFE_SB_TransmitMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader), true);
+    CFE_SB_TransmitMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader), true);
+
+    TEC_Data.HkTlm.Payload.reserved = 0;
+
     /*
     ** TEC App Runloop
     */
     while (CFE_ES_RunLoop(&TEC_Data.RunStatus) == true)
     {
-        /*
-        ** Performance Log Exit Stamp
-        */
-        CFE_ES_PerfLogExit(TEC_PERF_ID);
 
         /* Pend on receipt of command packet */
         status = CFE_SB_ReceiveBuffer(&SBBufPtr, TEC_Data.CommandPipe, CFE_SB_PEND_FOREVER);
 
-        /*
-        ** Performance Log Entry Stamp
-        */
-        CFE_ES_PerfLogEntry(TEC_PERF_ID);
-
         if (status == CFE_SUCCESS)
         {
+            TEC_Data.HkTlm.Payload.reserved = TEC_Data.HkTlm.Payload.reserved + 1;
+
+            CFE_SB_TimeStampMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader));
+            CFE_SB_TransmitMsg(CFE_MSG_PTR(TEC_Data.HkTlm.TelemetryHeader), true);
+
             /* "Read" the temperature, gives a value between 0 and 255 */
             TEC_Data.Temperature = rand() % 256;
 
@@ -107,11 +104,6 @@ void TEC_Main(void)
             TEC_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
         }
     }
-
-    /*
-    ** Performance Log Exit Stamp
-    */
-    CFE_ES_PerfLogExit(TEC_PERF_ID);
 
     CFE_ES_ExitApp(TEC_Data.RunStatus);
 }
@@ -173,6 +165,7 @@ CFE_Status_t TEC_Init(void)
         /*
         ** Subscribe to Housekeeping request commands
         */
+        CFE_EVS_SendDbg(TEC_INIT_INF_EID, "Subscribing to 0x%04x", TEC_SEND_HK_MID);
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(TEC_SEND_HK_MID), TEC_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
@@ -186,6 +179,7 @@ CFE_Status_t TEC_Init(void)
         /*
         ** Subscribe to ground command packets
         */
+       CFE_EVS_SendDbg(TEC_INIT_INF_EID, "Subscribing to 0x%04x", TEC_CMD_MID);
         status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(TEC_CMD_MID), TEC_Data.CommandPipe);
         if (status != CFE_SUCCESS)
         {
